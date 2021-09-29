@@ -2,13 +2,13 @@ import os
 import pandas as pd 
 from sklearn import ensemble 
 from sklearn import preprocessing
-<<<<<<< HEAD
 from sklearn import metrics
-=======
->>>>>>> 6feb841810bee78e3193c2c3732d2c4771bd4b8b
+
+from . import dispatcher
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 FOLD = int(os.environ.get("FOLD"))
+MODEL = os.environ.get("MODEL")
 
 FOLD_MAPPING = {
     0: [1, 2, 3, 4],
@@ -21,11 +21,7 @@ FOLD_MAPPING = {
 if __name__ == "__main__":
     df=pd.read_csv(TRAINING_DATA)
     train_df = df[df.kfold.isin(FOLD_MAPPING.get(FOLD))].reset_index(drop=True)
-<<<<<<< HEAD
     valid_df = df[df.kfold==FOLD].reset_index(drop=True)
-=======
-    valid_df = df[df.kefold==FOLD].reset_index(drop=True)
->>>>>>> 6feb841810bee78e3193c2c3732d2c4771bd4b8b
 
     ytrain=train_df.target.values
     yvalid=valid_df.target.values
@@ -46,7 +42,7 @@ if __name__ == "__main__":
         label_encoders.append((c, lbl))
 
     # data is ready to train
-    clf =ensemble.RandomForestClassifier(n_estimators=200, n_jobs= -1, verbose=2)
+    clf = dispatcher.MODELS[MODEL]
     clf.fit(train_df, ytrain)
     preds = clf.predict_proba(valid_df)[:, 1]
     print(metrics.roc_auc_score(yvalid, preds))
